@@ -33,7 +33,7 @@ class Billets
      *      maxMessage = "Votre nom ne peut faire plus de {{ limit }} caractères."
      * )
      */
-    private $nom;
+    private $nom = '';
 
     /**
      * @var string
@@ -46,7 +46,7 @@ class Billets
      *      maxMessage = "Votre prénom ne peut faire plus de {{ limit }} caractères."
      * )
      */
-    private $prenom;
+    private $prenom = '';
 
     /**
      * @var \DateTime

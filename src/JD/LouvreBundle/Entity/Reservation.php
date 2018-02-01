@@ -4,6 +4,7 @@ namespace JD\LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use DateTime;
 
 /**
  * Resrvation
@@ -37,7 +38,7 @@ class Reservation
      * @ORM\Column(name="email", type="string", length=255)
      * @Assert\Email()
      */
-    private $email = '';
+    private $email;
 
     /**
      * @var int
@@ -68,7 +69,13 @@ class Reservation
      */
     public function __construct()
     {
-        $this->billets = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->email = "";
+        $this->datecreate = new \DateTime("now", new \DateTimeZone('Europe/Paris'));
+        //Generation Du Code dela Reservation
+        $lettres = 'AZERTYUIOPQSDFGHJKLMWXCVBNAZERTYUIOPQSDFGHJKLMWXCVBN';
+        $lettres = str_split(str_shuffle($lettres), 6)[0];
+        $chifres = rand(100000, 999999);
+        $this->resaCode = str_split(str_shuffle($chifres.$lettres),12)[0];
     }
 
     /**

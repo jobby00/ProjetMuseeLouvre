@@ -9,7 +9,7 @@ jd_reservation_startReservation:
         { _controller: JDLouvreBundle:Reservation:startReservation, serialCode: null }
 
 jd_reservation_startBillets:
-    path: /billets/
+    path: /billets/{id}
     defaults:
         _controller: JDLouvreBundle:Reservation:startBillets
 
