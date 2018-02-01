@@ -1,0 +1,19 @@
+jd_reservation_index:
+    path: /
+    defaults:
+        _controller: JDLouvreBundle:Reservation:index
+
+jd_reservation_startReservation:
+    path: /reservation/
+    defaults:
+        { _controller: JDLouvreBundle:Reservation:startReservation, serialCode: null }
+
+jd_reservation_startBillets:
+    path: /billets/
+    defaults:
+        _controller: JDLouvreBundle:Reservation:startBillets
+
+jd_reservation_panier:
+    path: /panier/
+    defaults:
+        _controller: JDLouvreBundle:Reservation:panier

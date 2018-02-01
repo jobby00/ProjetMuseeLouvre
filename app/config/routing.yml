@@ -1,0 +1,4 @@
+jd_louvre:
+    resource: "@JDLouvreBundle/Resources/config/routing.yml"
+    prefix:   /
+

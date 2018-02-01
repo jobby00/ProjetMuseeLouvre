@@ -1,0 +1,4 @@
+services:
+#    jd_louvre.example:
+#        class: JD\LouvreBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
