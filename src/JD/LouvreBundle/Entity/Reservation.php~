@@ -1,0 +1,165 @@
+<?php
+
+namespace JD\LouvreBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * Resrvation
+ *
+ * @ORM\Table(name="reservation")
+ * @ORM\Entity(repositoryClass="JD\LouvreBundle\Repository\ReservationRepository")
+ */
+class Reservation
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="datecreate", type="datetime")
+     */
+    private $datecreate;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255)
+     */
+    private $email = '';
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="nbBillets", type="integer")
+     */
+    private $nbBillets = 1;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="resa_code", type="string")
+     */
+    private $resaCode;
+
+    /**
+     * @ORM\OneToMany(targetEntity="JD\LelouvreBundle\Entity\Billets", mappedBy="reservation")
+     * @Assert\Valid
+     */
+    private $billets;
+
+    
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set datecreate
+     *
+     * @param \DateTime $datecreate
+     *
+     * @return Reservation
+     */
+    public function setDatecreate($datecreate)
+    {
+        $this->datecreate = $datecreate;
+
+        return $this;
+    }
+
+    /**
+     * Get datecreate
+     *
+     * @return \DateTime
+     */
+    public function getDatecreate()
+    {
+        return $this->datecreate;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return Reservation
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set nbBillets
+     *
+     * @param integer $nbBillets
+     *
+     * @return Reservation
+     */
+    public function setNbBillets($nbBillets)
+    {
+        $this->nbBillets = $nbBillets;
+
+        return $this;
+    }
+
+    /**
+     * Get nbBillets
+     *
+     * @return int
+     */
+    public function getNbBillets()
+    {
+        return $this->nbBillets;
+    }
+
+    /**
+     * Set resaCode
+     *
+     * @param string $resaCode
+     *
+     * @return Reservation
+     */
+    public function setResaCode($resaCode)
+    {
+        $this->resaCode = $resaCode;
+
+        return $this;
+    }
+
+    /**
+     * Get resaCode
+     *
+     * @return string
+     */
+    public function getResaCode()
+    {
+        return $this->resaCode;
+    }
+}
