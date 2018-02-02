@@ -56,7 +56,7 @@ class ReservationController extends  Controller
     /**
      * @return Response
      */
-    public function startBilletsAction(SessionInterface $session, Request $request)
+    public function startBilletsAction(SessionInterface $session, Request $request, Reservation $reservation)
     {
         $resa = $session;
         $billets = new Billets();
@@ -67,15 +67,16 @@ class ReservationController extends  Controller
         {
             $billets = $form->getData();
             $resa = $billets;
+            $billets->setReservation($reservation);
             $session->set('resa', $resa);
             $em = $this->getDoctrine()->getManager();
             $em->persist($resa);
             $em->persist($billets);
             $em->flush();
 
+            dump($reservation);
             dump($billets);
             dump($resa);
-            die();
             $request->getSession()->getFlashBag()->add('notice', 'Vous avez bien demarrer votre reservation, vous ètres à l\'Etape 3');
             return $this->redirectToRoute('jd_reservation_panier');
         }
@@ -87,8 +88,11 @@ class ReservationController extends  Controller
     /**
      * @return Response
      */
-    public function panierAction()
+    public function panierAction(SessionInterface $session)
     {
+        $resa = $session;
+        dump($resa);
+        die();
         return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig');
     }
 }

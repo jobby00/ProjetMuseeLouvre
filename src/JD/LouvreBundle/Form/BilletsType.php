@@ -26,7 +26,7 @@ class BilletsType extends AbstractType
                     'days'      => range(1, 31),
                     'months'    => range(1, 12),
                     'years'     => range(1902, date('Y')),
-                    'format'    => 'dd/MM/yyyy'
+                    'format'    => 'dd-MM-yyyy'
                 ])
             ->add('pays', CountryType::class,
                 [
