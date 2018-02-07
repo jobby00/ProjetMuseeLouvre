@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ReservationController extends  Controller
 {
@@ -23,29 +22,28 @@ class ReservationController extends  Controller
     /**
      * @return Response
      */
-    public function startReservationAction(Request $request)
+    public function startReservationAction(Request $request, $resaCode)
     {
-        $reservation = new Reservation();
         $session = new Session();
+        //Initialisation du SERVICE OutilsReservayion
+        $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
+        $resa = $outilsReservation->reservationInitial($resaCode, true);
 
         $form = $this->createForm(ReservationType::class);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
         {
-            $reservation = $form->getData();
-            $resa = $reservation;
+            $resa = $form->getData();
             $session->set('resa', $resa);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($reservation);
-            $em->flush();
-
-            dump($reservation);
-            dump($resa);
-            $request->getSession()->getFlashBag()->add('notice', 'Vous avez bien demarrer votre reservation, vous ètres à l\'Etape 2');
-            return $this->redirectToRoute('jd_reservation_startBillets',
-                [
-                    'id'        => $resa->getId()
-                ]);
+            if($outilsReservation->reservationValider($resa))
+            {
+                $request->getSession()->getFlashBag()->add('notice', 'Vous avez bien demarrer votre reservation, vous ètres à l\'Etape 2');
+                return $this->redirectToRoute('jd_reservation_startBillets',
+                    [
+                        'resacode'  => $resa->getResaCode(),
+                        'id'        => $resa->getId()
+                    ]);
+            }
         }
 
         return $this->render('JDLouvreBundle:LouvreReservation/Reservation:startReservation.html.twig',
@@ -56,43 +54,65 @@ class ReservationController extends  Controller
     /**
      * @return Response
      */
-    public function startBilletsAction(SessionInterface $session, Request $request, Reservation $reservation)
+    public function startBilletsAction(Session $session, Request $request, Reservation $resa)
     {
-        $resa = $session;
         $billets = new Billets();
+        // intialisation  des billets
+        $outilsBillets = $this->get('service_container')
+            ->get('jd_reservation.outilsbillets');
 
-        $form = $this->createForm(BilletsType::class);
+
+        // création du formulaire associé à cette réservation + requête
+        $form = $this->createForm(BilletsType::class, $billets);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
-            $billets = $form->getData();
-            $resa = $billets;
-            $billets->setReservation($reservation);
-            $session->set('resa', $resa);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($resa);
-            $em->persist($billets);
-            $em->flush();
 
-            dump($reservation);
-            dump($billets);
-            dump($resa);
-            $request->getSession()->getFlashBag()->add('notice', 'Vous avez bien demarrer votre reservation, vous ètres à l\'Etape 3');
-            return $this->redirectToRoute('jd_reservation_panier');
+        // action lors de la soumission du formulaire
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $session->set('resa', $resa);
+            $billets->setReservation($resa);
+
+            if ($outilsBillets->validerBillet($billets, $resa))
+            {
+                $totalBillet = 0;
+                foreach ($resa->getBillets() as $billet)
+                {
+                    $totalBillet ++;
+                }
+                if ($resa->getNbBillets() != $totalBillet) {
+                    //après validation, transfert vers l'étape suivante avec les paramètres de la résa
+                    return $this->redirectToRoute('jd_reservation_startBillets',
+                        [
+                            'resacode'    => $resa->getResaCode(),
+                            'id'    => $resa->getId()
+                        ]);
+                } else {
+                    return $this->redirectToRoute('jd_reservation_panier',
+                        [
+                            'id' => $resa->getId()
+                        ]
+                    );
+                }
+            }
         }
+        $billetResa = $resa;
+        $resa->getBillets();
+        dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Billets:startBillets.html.twig',
             [
+                'billetResa'    => [$billetResa],
+                'billets'       => $billets,
                 'form'          => $form->createView()
-            ]);
+            ]
+        );
     }
     /**
      * @return Response
      */
-    public function panierAction(SessionInterface $session)
+    public function panierAction(Session $session)
     {
-        $resa = $session;
-        dump($resa);
-        die();
+        $session;
+        dump($session);
         return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig');
     }
 }

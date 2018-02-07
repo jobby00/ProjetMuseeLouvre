@@ -8,6 +8,57 @@
             <div class="page-header">
                 <h4 id="containers">Billets</h4>
             </div>
+            <div class="row">
+                <table class="table table-striped  table-responsive">
+                    <thead>
+                    <tr>
+                        <th>
+                            Nom
+                        </th>
+                        <th>
+                            Prénom
+                        </th>
+                        <th>
+                            Pays
+                        </th>
+                        <th>
+                            Date de naissance
+                        </th>
+                        <th>
+                            Code barre
+                        </th>
+                        <th>
+                            Date de la visite
+                        </th>
+                        <th>
+                            Tarif en HT
+                        </th>
+                        <th>
+                            Prix en TTC
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for billetResa in billetResa %}
+                        {% for billet in billetResa.billets %}
+                            <tr>
+                                <td> {{ billet.nom|upper }} </td>
+                                <td> {{ billet.prenom|capitalize }} </td>
+                                <td> {{ billet.pays }} </td>
+                                <td> {{ billet.dateNaissance | date('d/m/Y') }} </td>
+                                <td> {{ billetResa.resacode }} </td>
+                                <td> {{ billet.dateresa | date('d/m/Y') }} </td>
+                                <td> {{ billet.prix }} €</td>
+                                <td> {{ (((19.6 * billet.prix)/100) + billet.prix)|number_format(2, ',',',') }} €</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             <div class="bs-component">
                 <div class="jumbotron">
                     {{ include('@JDLouvre/LouvreReservation/Templates/errors.html.twig') }}
@@ -44,4 +95,20 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascript %}
+    {{ parent() }}
+    <!-- Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                startDate: ('+ 0d'),
+                daysOfWeekDisabled: '0,2',
+                datesDisabled: ['01/05/yyyy', '25/12/yyyy']
+            });
+        });
+    </script>
 {% endblock %}

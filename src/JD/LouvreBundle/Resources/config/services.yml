@@ -1,4 +1,14 @@
 services:
-#    jd_louvre.example:
-#        class: JD\LouvreBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    jd_reservation.outilsreservation:
+        class: JD\LouvreBundle\Services\OutilsReservation\OutilsReservation
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - '@templating'
+            - '@session'
+
+    jd_reservation.outilsbillets:
+        class: JD\LouvreBundle\Services\OutilsBillets\OutilsBillets
+        arguments:
+              - "@doctrine.orm.entity_manager"
+              - "@jd_reservation.outilsreservation"
+              - '@session'

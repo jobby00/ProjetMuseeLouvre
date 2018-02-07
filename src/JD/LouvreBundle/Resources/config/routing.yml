@@ -1,15 +1,15 @@
 jd_reservation_index:
     path: /
     defaults:
-        _controller: JDLouvreBundle:Reservation:index
+        { _controller: JDLouvreBundle:Reservation:index, resaCode: null }
 
 jd_reservation_startReservation:
     path: /reservation/
     defaults:
-        { _controller: JDLouvreBundle:Reservation:startReservation, serialCode: null }
+        { _controller: JDLouvreBundle:Reservation:startReservation, resaCode: null }
 
 jd_reservation_startBillets:
-    path: /billets/{id}
+    path: /billets/{id}/{resacode}
     defaults:
         _controller: JDLouvreBundle:Reservation:startBillets
 
