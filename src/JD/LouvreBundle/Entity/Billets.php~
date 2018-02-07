@@ -26,20 +26,38 @@ class Billets
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 75,
+     *      minMessage = "Votre nom ne peut faire moins de {{ limit }} caractères.",
+     *      maxMessage = "Votre nom ne peut faire plus de {{ limit }} caractères."
+     * )
      */
-    private $nom;
+    private $nom = '';
 
     /**
      * @var string
      *
      * @ORM\Column(name="prenom", type="string", length=255)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 75,
+     *      minMessage = "Votre prénom ne peut faire moins de {{ limit }} caractères.",
+     *      maxMessage = "Votre prénom ne peut faire plus de {{ limit }} caractères."
+     * )
      */
-    private $prenom;
+    private $prenom = '';
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateNaissance", type="datetime")
+     * @ORM\Column(name="dateNaissance", type="date")
+     * @Assert\Date()
+     * @Assert\LessThan(
+     *     "today",
+     *     message = "merci de vérifier la date de naissance"
+     * )
      */
     private $dateNaissance;
 
@@ -47,6 +65,7 @@ class Billets
      * @var string
      *
      * @ORM\Column(name="pays", type="string", length=2)
+     * @Assert\Country()
      */
     private $pays;
 
@@ -54,6 +73,11 @@ class Billets
      * @var \DateTime
      *
      * @ORM\Column(name="dateResa", type="datetime")
+     * @Assert\DateTime()
+     * @Assert\GreaterThanOrEqual(
+     *      "today",
+     *      message = "merci ne pas choisir une date antérieure à celle du jour.."
+     * )
      */
     private $dateResa;
 
@@ -68,6 +92,7 @@ class Billets
      * @var bool
      *
      * @ORM\Column(name="demiJournee", type="boolean")
+     * @Assert\Type(type="boolean")
      */
     private $demiJournee;
 
@@ -76,17 +101,10 @@ class Billets
      *
      * @ORM\Column(name="prix", type="float")
      */
-    private $prix;
+    private $prix = 0;
 
     /**
-     * @var float
-     *
-     * @ORM\Column(name="prixTotal", type="float")
-     */
-    private $prixTotal;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="JD\LelouvreBundle\Entity\Reservation", inversedBy="billets")
+     * @ORM\ManyToOne(targetEntity="JD\LouvreBundle\Entity\Reservation", inversedBy="billets")
      * @ORM\JoinColumn(nullable=false)
      */
     private $reservation;
@@ -317,5 +335,28 @@ class Billets
     {
         return $this->prixTotal;
     }
-}
 
+    /**
+     * Set reservation
+     *
+     * @param \JD\LouvreBundle\Entity\Reservation $reservation
+     *
+     * @return Billets
+     */
+    public function setReservation(\JD\LouvreBundle\Entity\Reservation $reservation)
+    {
+        $this->reservation = $reservation;
+
+        return $this;
+    }
+
+    /**
+     * Get reservation
+     *
+     * @return \JD\LouvreBundle\Entity\Reservation
+     */
+    public function getReservation()
+    {
+        return $this->reservation;
+    }
+}

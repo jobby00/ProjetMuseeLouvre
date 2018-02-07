@@ -4,6 +4,7 @@ namespace JD\LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use DateTime;
 
 /**
  * Resrvation
@@ -26,6 +27,8 @@ class Reservation
      * @var \DateTime
      *
      * @ORM\Column(name="datecreate", type="datetime")
+     * @Assert\DateTime()
+     * @Assert\GreaterThanOrEqual("today")
      */
     private $datecreate;
 
@@ -33,13 +36,18 @@ class Reservation
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Assert\Email()
      */
-    private $email = '';
+    private $email;
 
     /**
      * @var int
      *
      * @ORM\Column(name="nbBillets", type="integer")
+     * @ASSERT\Range(
+     *     min = 1,
+     *     max = 20
+     * )
      */
     private $nbBillets = 1;
 
@@ -51,12 +59,32 @@ class Reservation
     private $resaCode;
 
     /**
-     * @ORM\OneToMany(targetEntity="JD\LelouvreBundle\Entity\Billets", mappedBy="reservation")
+     * @var float
+     *
+     * @ORM\Column(name="prixTotal", type="float")
+     */
+    private $prixTotal = 0;
+
+    /**
+     * @ORM\OneToMany(targetEntity="JD\LouvreBundle\Entity\Billets", mappedBy="reservation")
      * @Assert\Valid
      */
     private $billets;
 
-    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->email = "";
+        $this->datecreate = new \DateTime("now", new \DateTimeZone('Europe/Paris'));
+        //Generation Du Code dela Reservation
+        $lettres = 'AZERTYUIOPQSDFGHJKLMWXCVBNAZERTYUIOPQSDFGHJKLMWXCVBN';
+        $lettres = str_split(str_shuffle($lettres), 6)[0];
+        $chifres = rand(100000, 999999);
+        $this->resaCode = str_split(str_shuffle($chifres.$lettres),12)[0];
+    }
+
     /**
      * Get id
      *
@@ -152,7 +180,6 @@ class Reservation
 
         return $this;
     }
-
     /**
      * Get resaCode
      *
@@ -161,5 +188,39 @@ class Reservation
     public function getResaCode()
     {
         return $this->resaCode;
+    }
+
+    /**
+     * Add billet
+     *
+     * @param \JD\LouvreBundle\Entity\Billets $billet
+     *
+     * @return Reservation
+     */
+    public function addBillet(\JD\LouvreBundle\Entity\Billets $billet)
+    {
+        $this->billets[] = $billet;
+
+        return $this;
+    }
+
+    /**
+     * Remove billet
+     *
+     * @param \JD\LouvreBundle\Entity\Billets $billet
+     */
+    public function removeBillet(\JD\LouvreBundle\Entity\Billets $billet)
+    {
+        $this->billets->removeElement($billet);
+    }
+
+    /**
+     * Get billets
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBillets()
+    {
+        return $this->billets;
     }
 }

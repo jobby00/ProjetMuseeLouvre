@@ -10,9 +10,64 @@
             </div>
             <div class="bs-component">
                 <div class="jumbotron">
-                    <h1>Musée Du Louvre</h1>
-                    <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-                    <p><a href="" class="btn btn-primary btn-lg">Confirmez votre Réservation</a></p>
+                    <div class="row">
+                        <table class="table table-striped  table-responsive">
+                            <thead>
+                            <tr>
+                                <th>
+                                    Nom
+                                </th>
+                                <th>
+                                    Prénom
+                                </th>
+                                <th>
+                                    Pays
+                                </th>
+                                <th>
+                                    Date de naissance
+                                </th>
+                                <th>
+                                    Adresse email
+                                </th>
+                                <th>
+                                    Date de visite
+                                </th>
+                                <th>
+                                    Tarif HT
+                                </th>
+                                <th>
+                                    Prix  TTC
+                                </th>
+                                <th>
+                                    Modifié
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                            </tr>
+                            {% for billet in billetResa.billets %}
+                                <tr>
+                                    <td> {{ billet.nom }} </td>
+                                    <td> {{ billet.prenom }} </td>
+                                    <td> {{ billet.pays }} </td>
+                                    <td> {{ billet.dateNaissance | date('d/m/Y') }} </td>
+                                    <td>  </td>
+                                    <td> {{ billetResa.dateresa | date('d/m/Y') }} </td>
+                                    <td> {{ billet.prix }} €</td>
+                                    <td> €</td>
+                                    <td>
+                                        <a href="#" title="Modifier" >
+                                            <i class="glyphicon glyphicon-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <p><h4>La somme total HT: {{ prixtotal }} €</h4></p>
+                        <p><h4>La somme total TTC: <spam class="price-totale">{{ (((prixtotal * 19.6)) / 100 + prixtotal)|number_format(2, ',',',')}}</spam> €</h4></p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -60,4 +60,19 @@ class OutilsReservation
         }
         return $reservationValide;
     }
+
+
+    /**
+     * @param $billets
+     * @param $reservation
+     */
+    public function prixTotal($billets, $reservation){
+        $total = 0;
+        foreach ($billets as  $billet){
+            $total = $total + $billet->getPrix();
+        }
+        $reservation->setPrixtotal($total);
+        $this->em->persist($reservation);
+        $this->em->flush();
+    }
 }

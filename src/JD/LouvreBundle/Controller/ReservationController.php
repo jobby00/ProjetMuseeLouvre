@@ -71,7 +71,7 @@ class ReservationController extends  Controller
         {
             $session->set('resa', $resa);
             $billets->setReservation($resa);
-
+            $billets = $outilsBillets->calculPrix($billets);
             if ($outilsBillets->validerBillet($billets, $resa))
             {
                 $totalBillet = 0;
@@ -95,6 +95,14 @@ class ReservationController extends  Controller
                 }
             }
         }
+        $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
+        $totalBilletPrix = $this
+            ->getDoctrine()
+            ->getManager()
+            ->getRepository(Billets::class)
+            ->findByReservation($resa);
+
+        $outilsReservation->prixTotal($totalBilletPrix, $resa);
         $billetResa = $resa;
         $resa->getBillets();
         dump($resa);
@@ -102,6 +110,7 @@ class ReservationController extends  Controller
             [
                 'billetResa'    => [$billetResa],
                 'billets'       => $billets,
+                'prixtotal'     => $resa->getPrixTotal(),
                 'form'          => $form->createView()
             ]
         );
@@ -109,10 +118,13 @@ class ReservationController extends  Controller
     /**
      * @return Response
      */
-    public function panierAction(Session $session)
+    public function panierAction(Reservation $resa, Request $request)
     {
-        $session;
-        dump($session);
-        return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig');
+        $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
+        $resa->getBillets();
+        return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig',
+            [
+                'billetResa'        => $resa
+            ]);
     }
 }

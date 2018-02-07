@@ -59,6 +59,13 @@ class Reservation
     private $resaCode;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="prixTotal", type="float")
+     */
+    private $prixTotal = 0;
+
+    /**
      * @ORM\OneToMany(targetEntity="JD\LouvreBundle\Entity\Billets", mappedBy="reservation")
      * @Assert\Valid
      */
@@ -215,5 +222,29 @@ class Reservation
     public function getBillets()
     {
         return $this->billets;
+    }
+
+    /**
+     * Set prixTotal
+     *
+     * @param float $prixTotal
+     *
+     * @return Reservation
+     */
+    public function setPrixTotal($prixTotal)
+    {
+        $this->prixTotal = $prixTotal;
+
+        return $this;
+    }
+
+    /**
+     * Get prixTotal
+     *
+     * @return float
+     */
+    public function getPrixTotal()
+    {
+        return $this->prixTotal;
     }
 }

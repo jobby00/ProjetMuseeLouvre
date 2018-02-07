@@ -104,13 +104,6 @@ class Billets
     private $prix = 0;
 
     /**
-     * @var float
-     *
-     * @ORM\Column(name="prixTotal", type="float")
-     */
-    private $prixTotal = 0;
-
-    /**
      * @ORM\ManyToOne(targetEntity="JD\LouvreBundle\Entity\Reservation", inversedBy="billets")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -317,30 +310,6 @@ class Billets
     public function getPrix()
     {
         return $this->prix;
-    }
-
-    /**
-     * Set prixTotal
-     *
-     * @param float $prixTotal
-     *
-     * @return Billets
-     */
-    public function setPrixTotal($prixTotal)
-    {
-        $this->prixTotal = $prixTotal;
-
-        return $this;
-    }
-
-    /**
-     * Get prixTotal
-     *
-     * @return float
-     */
-    public function getPrixTotal()
-    {
-        return $this->prixTotal;
     }
 
     /**
