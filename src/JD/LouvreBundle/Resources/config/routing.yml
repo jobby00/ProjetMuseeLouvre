@@ -17,3 +17,8 @@ jd_reservation_panier:
     path: /panier/{id}/{resacode}
     defaults:
         _controller: JDLouvreBundle:Reservation:panier
+
+jd_reservation_modifier:
+    path: /modifier/{id}
+    defaults:
+        _controller: JDLouvreBundle:Reservation:modifie

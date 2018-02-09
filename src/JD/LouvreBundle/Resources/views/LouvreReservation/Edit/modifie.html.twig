@@ -1,0 +1,65 @@
+{% extends "JDLouvreBundle::layout.html.twig" %}
+{% block title %}
+    Page d'accueil - {{ parent() }}
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-header">
+                <h4 id="containers">Accueil</h4>
+            </div>
+            <div class="bs-component">
+                <div class="jumbotron">
+                    <div class="row">
+                        {{ include('@JDLouvre/LouvreReservation/Templates/errors.html.twig') }}
+                        <div class="row">
+
+                            {{ form_start( form, {'attr': {'class': 'col-sm-6 col-sm-offset-3'}}) }}
+
+                            {{ form_errors(form) }}
+
+                            {{ include('@JDLouvre/LouvreReservation/Templates/billetsForm.html.twig') }}
+                            <div class="form-group ">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                {{ form_label(form.dateresa, "Choisissez une date") }}
+                                {{ form_errors(form.dateresa) }}
+                                <div class="input-group date">
+                                    {{ form_widget(form.dateresa, {'attr': {'class': 'form-control datepicker'}}) }}
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.demijournee, "Choisissez le type de billets") }}
+                                {{ form_errors(form.demijournee) }}
+                                {{ form_widget(form.demijournee, {'attr': {'class': 'form-control', 'id': 'demiJournee'}}) }}
+                            </div>
+
+                            {{ form_widget(form.Suivant, {'attr': {'class': 'btn btn-primary'}}) }}
+                            {{ form_end(form) }}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    {{ parent() }}
+    <!-- Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                startDate: ('+ 0d'),
+                daysOfWeekDisabled: '0,2',
+                datesDisabled: ['01/05/yyyy', '25/12/yyyy']
+            });
+        });
+    </script>
+{% endblock %}

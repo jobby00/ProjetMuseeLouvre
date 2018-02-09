@@ -117,15 +117,61 @@ class ReservationController extends  Controller
         );
     }
 
-    public function panierAction(Request $request, Session $session, $id)
+    public function panierAction(Request $request, $id)
     {
-        $resa = $session->get('resa');
+        $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
+        $repository =  $this->getDoctrine()->getRepository('JDLouvreBundle:Reservation');
+        $resa = $repository->find($id);
         $billetResa = $resa;
+        $totalBilletPrix = $this
+            ->getDoctrine()
+            ->getManager()
+            ->getRepository(Billets::class)
+            ->findByReservation($resa);
+
+        $outilsReservation->prixTotal($totalBilletPrix, $resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig',
             [
                 'billetResa'        => [$billetResa],
                 'billets'           => $resa,
                 'prixtotal'         => $resa->getPrixTotal()
+            ]);
+    }
+
+    public  function modifieAction(Billets $billets, Request $request, Session $session)
+    {
+        $outilsBillets = $this->get('service_container')->get('jd_reservation.outilsbillets');
+        $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
+        $resa = $session->get('resa');
+        if(null === $resa)
+        {
+            throw new NotFoundHttpException("Le billet".$resa->getResaCode()." n'existe pas" );
+        }
+
+        $form = $this->createForm(BilletsType::class, $billets);
+        $form->handleRequest($request);
+        dump($billets);
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $session->set('resa', $resa);
+            $billets = $outilsBillets->calculPrix($billets);
+            $em = $this->getDoctrine()
+                ->getManager();
+            $em->flush();
+
+            $request->getSession()->getFlashBag()->add('notice', 'Votre billet a été bien modifiée');;
+            return $this->redirectToRoute('jd_reservation_panier',
+                [
+                    'resacode'    => $resa->getResaCode(),
+                    'id' =>$resa->getId()
+                ]);
+        }
+
+        dump($resa);
+        return $this->render('JDLouvreBundle:LouvreReservation/Edit:modifie.html.twig',
+            [
+                'resa'      => $resa,
+                'form'      => $form->createView()
             ]);
     }
 }

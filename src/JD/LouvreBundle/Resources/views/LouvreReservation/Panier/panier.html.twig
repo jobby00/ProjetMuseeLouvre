@@ -55,6 +55,11 @@
                                         <td> {{ billet.dateresa | date('d/m/Y') }} </td>
                                         <td> {{ billet.prix }} €</td>
                                         <td> {{ (((19.6 * billet.prix)/100) + billet.prix)|number_format(2, ',',',') }} €</td>
+                                        <td>
+                                            <a href="{{ path('jd_reservation_modifier', {'id': billet.id}) }}" title="Modifier" >
+                                                <i class="glyphicon glyphicon-pencil"></i>
+                                            </a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
