@@ -27,7 +27,7 @@
                                     Date de naissance
                                 </th>
                                 <th>
-                                    Adresse email
+                                    Code reservation
                                 </th>
                                 <th>
                                     Date de visite
@@ -44,24 +44,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                            </tr>
-                            {% for billet in billetResa.billets %}
-                                <tr>
-                                    <td> {{ billet.nom }} </td>
-                                    <td> {{ billet.prenom }} </td>
-                                    <td> {{ billet.pays }} </td>
-                                    <td> {{ billet.dateNaissance | date('d/m/Y') }} </td>
-                                    <td>  </td>
-                                    <td> {{ billetResa.dateresa | date('d/m/Y') }} </td>
-                                    <td> {{ billet.prix }} €</td>
-                                    <td> €</td>
-                                    <td>
-                                        <a href="#" title="Modifier" >
-                                            <i class="glyphicon glyphicon-pencil"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                            {% for billetResa in billetResa %}
+                                {% for billet in billetResa.billets %}
+                                    <tr>
+                                        <td> {{ billet.nom|upper }} </td>
+                                        <td> {{ billet.prenom|capitalize }} </td>
+                                        <td> {{ billet.pays }} </td>
+                                        <td> {{ billet.dateNaissance | date('d/m/Y') }} </td>
+                                        <td> {{ billetResa.resacode }} </td>
+                                        <td> {{ billet.dateresa | date('d/m/Y') }} </td>
+                                        <td> {{ billet.prix }} €</td>
+                                        <td> {{ (((19.6 * billet.prix)/100) + billet.prix)|number_format(2, ',',',') }} €</td>
+                                    </tr>
+                                {% endfor %}
                             {% endfor %}
                             </tbody>
                         </table>

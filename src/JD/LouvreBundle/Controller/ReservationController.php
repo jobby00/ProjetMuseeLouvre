@@ -89,9 +89,9 @@ class ReservationController extends  Controller
                 } else {
                     return $this->redirectToRoute('jd_reservation_panier',
                         [
-                            'id' => $resa->getId()
-                        ]
-                    );
+                            'resacode'    => $resa->getResaCode(),
+                            'id'    => $resa->getId()
+                        ]);
                 }
             }
         }
@@ -105,6 +105,7 @@ class ReservationController extends  Controller
         $outilsReservation->prixTotal($totalBilletPrix, $resa);
         $billetResa = $resa;
         $resa->getBillets();
+        $resa = $session->get('resa');
         dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Billets:startBillets.html.twig',
             [
@@ -115,16 +116,16 @@ class ReservationController extends  Controller
             ]
         );
     }
-    /**
-     * @return Response
-     */
-    public function panierAction(Reservation $resa, Request $request)
+
+    public function panierAction(Request $request, Session $session, $id)
     {
-        $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
-        $resa->getBillets();
+        $resa = $session->get('resa');
+        $billetResa = $resa;
         return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig',
             [
-                'billetResa'        => $resa
+                'billetResa'        => [$billetResa],
+                'billets'           => $resa,
+                'prixtotal'         => $resa->getPrixTotal()
             ]);
     }
 }

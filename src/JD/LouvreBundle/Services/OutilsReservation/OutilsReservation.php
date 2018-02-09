@@ -1,6 +1,7 @@
 <?php
 namespace JD\LouvreBundle\Services\OutilsReservation;
 
+use JD\LouvreBundle\Entity\Billets;
 use JD\LouvreBundle\Entity\Reservation;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Doctrine\ORM\EntityManager as ORM;
@@ -8,6 +9,7 @@ use Doctrine\ORM\EntityManager as ORM;
 
 class OutilsReservation
 {
+    private  $nbBilletsMaxParJour = 1000;
     private $em;
     private $session;
 
@@ -61,18 +63,17 @@ class OutilsReservation
         return $reservationValide;
     }
 
-
-    /**
+     /**
      * @param $billets
      * @param $reservation
      */
-    public function prixTotal($billets, $reservation){
-        $total = 0;
+    public function prixTotal($billets, $resa){
+            $total = 0;
         foreach ($billets as  $billet){
             $total = $total + $billet->getPrix();
         }
-        $reservation->setPrixtotal($total);
-        $this->em->persist($reservation);
+        $resa->setPrixtotal($total);
+        $this->em->persist($resa);
         $this->em->flush();
     }
 }

@@ -14,6 +14,6 @@ jd_reservation_startBillets:
         _controller: JDLouvreBundle:Reservation:startBillets
 
 jd_reservation_panier:
-    path: /panier/
+    path: /panier/{id}/{resacode}
     defaults:
         _controller: JDLouvreBundle:Reservation:panier
