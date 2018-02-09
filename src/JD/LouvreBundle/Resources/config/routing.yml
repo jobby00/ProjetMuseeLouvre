@@ -22,3 +22,13 @@ jd_reservation_modifier:
     path: /modifier/{id}
     defaults:
         _controller: JDLouvreBundle:Reservation:modifie
+
+jd_reservation_delet:
+    path: /supprimer/{id}
+    defaults:
+        _controller: JDLouvreBundle:Reservation:delet
+
+jd_reservation_add:
+    path: /ajourter/{id}
+    defaults:
+        _controller: JDLouvreBundle:Reservation:add

@@ -109,6 +109,7 @@ class ReservationController extends  Controller
         dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Billets:startBillets.html.twig',
             [
+                'resa'          => $resa,
                 'billetResa'    => [$billetResa],
                 'billets'       => $billets,
                 'prixtotal'     => $resa->getPrixTotal(),
@@ -173,5 +174,78 @@ class ReservationController extends  Controller
                 'resa'      => $resa,
                 'form'      => $form->createView()
             ]);
+    }
+
+    public function addAction(Request $request, Session $session, Reservation $reservation)
+    {
+        $resa = $session->get('resa');
+
+        $em = $this
+            ->getDoctrine()
+            ->getManager();
+
+        if(null === $resa)
+        {
+            throw  new NotFoundHttpException("Se billet n°: " .$resa->getResaCode(). " n'exite pas ");
+        }
+        $nb = $reservation->getNbBillets();
+
+        $reservation->setNbBillets($nb + 1);
+        $resa = $reservation;
+        $session->set('resa', $resa);
+        $em->persist($reservation);
+        $em->flush();
+        $request->getSession()->getFlashBag()->add('info', "Vous avez ajouté un billet aux nombre de billets ".$reservation->getNbBillets());
+        return $this->redirectToRoute('jd_reservation_startBillets',
+            [
+                'resacode'    => $resa->getResaCode(),
+                'id'    => $resa->getId()
+            ]
+        );
+    }
+
+
+    public function deletAction(Request $request, Session $session, Reservation $reservation)
+    {
+        $resa = $session->get('resa');
+
+        $em = $this
+            ->getDoctrine()
+            ->getManager();
+
+        if(null === $resa)
+        {
+            throw  new NotFoundHttpException("Se billet n°: " .$resa->getResaCode(). " n'exite pas ");
+        }
+
+        $nb = $reservation->getNbBillets();
+        $reservation->setNbBillets($nb - 1);
+        $nb = $reservation->getNbBillets();
+
+        if($nb > 1)
+        {
+            $resa = $reservation;
+            $session->set('resa', $resa);
+            $em->persist($reservation);
+            $em->flush();
+            $request->getSession()->getFlashBag()->add('info', "Le nombre de billet a bien été modifié." .$reservation->getNbBillets());
+            return $this->redirectToRoute('jd_reservation_startBillets',
+                [
+                    'resacode'    => $resa->getResaCode(),
+                    'id'    => $resa->getId()
+                ]
+            );
+        }
+        elseif($nb == 1)
+        {
+            $resa = $reservation;
+            $session->set('resa', $resa);
+            $em->persist($reservation);
+            $em->flush();
+            return $this->redirectToRoute('jd_reservation_panier',
+                [
+                    'id' =>$resa->getId()
+                ]);
+        }
     }
 }
