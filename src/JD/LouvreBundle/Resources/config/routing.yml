@@ -32,3 +32,8 @@ jd_reservation_add:
     path: /ajourter/{id}
     defaults:
         _controller: JDLouvreBundle:Reservation:add
+
+jd_reservation_stripe:
+    path: /stripe/{id}
+    defaults:
+        _controller: JDLouvreBundle:Reservation:stripe

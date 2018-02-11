@@ -67,9 +67,73 @@
                         </table>
                         <p><h4>La somme total HT: {{ prixtotal }} €</h4></p>
                         <p><h4>La somme total TTC: <spam class="price-totale">{{ (((prixtotal * 19.6)) / 100 + prixtotal)|number_format(2, ',',',')}}</spam> €</h4></p>
+                        {% for billetResa in billetResa %}
+                        <form action="{{ path('jd_reservation_stripe', {'id': resa.id}) }}" method="POST">
+                            <script
+                                    src="https://checkout.stripe.com/checkout.js"
+                                    class="stripe-button"
+                                    data-key="pk_test_yJVvuJlc5zGFsqwN5J402GTE"
+                                    data-amount="{{ ((((19.6 * prixtotal)/ 100)  + prixtotal)) * 100 }}"
+                                    data-description="Vous recevrez vos {{ billetResa.nbBillets }} billets par email"
+                                    data-image = "https://stripe.com/img/documentation/checkout/marketplace.png"
+                                    data-email = "{{ billetResa.email }}"
+                                    data-locale="auto"
+                                    data-currency="eur"
+                            >
+                            </script>
+                            <button class="btn btn-primary">Payez par carte bancaire</button>
+                        </form>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('pk_test_yJVvuJlc5zGFsqwN5J402GTE');
+        var elements = stripe.elements();
+
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Create a token or display an error when the form is submitted.
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    // Inform the customer that there was an error
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Send the token to your server
+                    stripeTokenHandler(result.token);
+                }
+            });
+        });
+
+        function stripeTokenHandler(token) {
+            // Insert the token ID into the form so it gets submitted to the server
+            var form = document.getElementById('payment-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            form.submit();
+        }
+    </script>
 {% endblock %}

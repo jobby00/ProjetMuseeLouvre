@@ -105,7 +105,6 @@ class ReservationController extends  Controller
         $outilsReservation->prixTotal($totalBilletPrix, $resa);
         $billetResa = $resa;
         $resa->getBillets();
-        $resa = $session->get('resa');
         dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Billets:startBillets.html.twig',
             [
@@ -118,7 +117,7 @@ class ReservationController extends  Controller
         );
     }
 
-    public function panierAction(Request $request, $id)
+    public function panierAction(Request $request, $id, Session $session)
     {
         $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
         $repository =  $this->getDoctrine()->getRepository('JDLouvreBundle:Reservation');
@@ -129,10 +128,10 @@ class ReservationController extends  Controller
             ->getManager()
             ->getRepository(Billets::class)
             ->findByReservation($resa);
-
         $outilsReservation->prixTotal($totalBilletPrix, $resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig',
             [
+                'resa'              => $resa,
                 'billetResa'        => [$billetResa],
                 'billets'           => $resa,
                 'prixtotal'         => $resa->getPrixTotal()
@@ -247,5 +246,28 @@ class ReservationController extends  Controller
                     'id' =>$resa->getId()
                 ]);
         }
+    }
+    public function  stripeAction(Session $session, Request $request, Reservation $reservation)
+    {
+        $resa =  $session->get('resa');
+        $sommeHt = $reservation->getPrixTotal();
+        $sommeTtc = (((19.6 * $sommeHt) /100) + $sommeHt);
+        dump($sommeHt);
+        dump($sommeTtc);
+        \Stripe\Stripe::setApiKey("sk_test_CGUR0LzqpU5EUhIPfAdqatvm");
+
+        \Stripe\Charge::create(array(
+            "amount" => $sommeTtc * 100,
+            "currency" => "eur",
+            "source" => $request->request->get('stripeToken'), // obtained with Stripe.js
+            "description" => "Paiement Test",
+        ));
+        dump($resa);
+        return $this->redirectToRoute('jd_reservation_panier',
+            [
+                'resacode'    => $resa->getResaCode(),
+                'id'    => $resa->getId()
+            ]
+        );
     }
 }
