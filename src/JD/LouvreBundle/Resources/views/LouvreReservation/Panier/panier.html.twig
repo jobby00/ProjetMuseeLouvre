@@ -66,14 +66,14 @@
                             </tbody>
                         </table>
                         <p><h4>La somme total HT: {{ prixtotal }} €</h4></p>
-                        <p><h4>La somme total TTC: <spam class="price-totale">{{ (((prixtotal * 19.6)) / 100 + prixtotal)|number_format(2, ',',',')}}</spam> €</h4></p>
+                        <p><h4>La somme total TTC: <spam class="price-totale">{{ (((prixtotal * 20)) / 100 + prixtotal)|number_format(2, ',',',')}}</spam> €</h4></p>
                         {% for billetResa in billetResa %}
                         <form action="{{ path('jd_reservation_stripe', {'id': resa.id}) }}" method="POST">
                             <script
                                     src="https://checkout.stripe.com/checkout.js"
                                     class="stripe-button"
                                     data-key="pk_test_yJVvuJlc5zGFsqwN5J402GTE"
-                                    data-amount="{{ ((((19.6 * prixtotal)/ 100)  + prixtotal)) * 100 }}"
+                                    data-amount="{{ ((((20 * prixtotal)/ 100)  + prixtotal)) * 100 }}"
                                     data-description="Vous recevrez vos {{ billetResa.nbBillets }} billets par email"
                                     data-image = "https://stripe.com/img/documentation/checkout/marketplace.png"
                                     data-email = "{{ billetResa.email }}"

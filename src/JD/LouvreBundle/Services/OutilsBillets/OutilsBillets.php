@@ -1,12 +1,9 @@
 <?php
 namespace JD\LouvreBundle\Services\OutilsBillets;
 
-
 use Doctrine\ORM\EntityManager;
 use JD\LouvreBundle\Entity\Billets;
 use JD\LouvreBundle\Entity\Reservation;
-use JD\LouvreBundle\JDLouvreBundle;
-use Symfony\Component\HttpFoundation\Session\Session;
 use \DateTime;
 
 class OutilsBillets
@@ -19,10 +16,9 @@ class OutilsBillets
     private $tarifNormal    = 16;
     private  $heureLimiteDemiJournee = 14;
     private  $nbBilletsMaxParJour = 1000;
-    private $em;
-    private $session;
+    private  $em;
 
-    public  function __construct(EntityManager $em)
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
@@ -55,11 +51,24 @@ class OutilsBillets
         }
     }
 
+    public function verifNbPlaces($date, $nbBillets = 1)
+    {
+        $nbBilleReserves = $this->em->getRepository('JDLouvreBundle:Billets')
+           ->countByDateResa($date);
+
+       if ($nbBilleReserves + $nbBillets <= $this->nbBilletsMaxParJour){
+           return true;
+       }else{
+           $this->session->getFlashBag()->add('erreurInterne', "Nous sommes désolé, il reste seulement X billet(s) disponibles à la date demandée!");
+           return false;
+       }
+    }
+
+    /**
     public function verifNbPlaces(Billets $billets, Reservation $resa)
     {
         $billetDispo =  true;
-
-        $nbBilleReserves = $this->em
+        $nbBilleReserves = $this->getDoctrine()->getManager()
             ->getRepository('JDLouvreBundle:Billets')
             ->findByDateResa($billets->getDateResa());
         $sombillets = 0;
@@ -82,7 +91,7 @@ class OutilsBillets
         }
         return $billetDispo;
     }
-
+**/
     /**
      * @param Billets $billets
      * @param $resa
@@ -90,26 +99,13 @@ class OutilsBillets
      */
     public  function validerBillet($billets, $resa)
     {
-        $em = $this->em;
-        $validerBillet = true;
-        if(!$this->verifDate($billets) || !$this->verifNbPlaces($billets, $resa))
+        if(!$this->verifDate($billets) || !$this->verifNbPlaces($billets->getDateResa()))
         {
             $validerBillet = false;
             return $validerBillet;
+        }else{
+            return true;
         }
-        try
-        {
-            $resa->addBillet($billets);
-            $em->persist($resa);
-            $em->persist($billets);
-            $em->flush();
-            $billets = true;
-        }catch (Exception $e)
-        {
-            $this->session->getFlashBag()->add('erreurInterne', "Une erreur interne s'est produite, merci de réessayer.");
-            $billets = false;
-        }
-        return $billets;
     }
 
     /**
@@ -158,7 +154,6 @@ class OutilsBillets
         {
             $prix = $this->tarifNormal = 16;
         }
-        $billets->setPrix($prix);
-        return $billets;
+        return $prix;
     }
 }

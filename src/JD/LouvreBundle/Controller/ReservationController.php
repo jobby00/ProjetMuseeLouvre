@@ -69,9 +69,7 @@ class ReservationController extends  Controller
         // action lors de la soumission du formulaire
         if ($form->isSubmitted() && $form->isValid())
         {
-            $session->set('resa', $resa);
-            $billets->setReservation($resa);
-            $billets = $outilsBillets->calculPrix($billets);
+
             if ($outilsBillets->validerBillet($billets, $resa))
             {
                 $totalBillet = 0;
@@ -81,6 +79,15 @@ class ReservationController extends  Controller
                 }
                 if ($resa->getNbBillets() != $totalBillet) {
                     //après validation, transfert vers l'étape suivante avec les paramètres de la résa
+                    $session->set('resa', $resa);
+                    $billets->setReservation($resa);
+                    $prix = $outilsBillets->calculPrix($billets);
+                    $billets->setPrix($prix);
+
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($resa);
+                    $em->persist($billets);
+                    $em->flush();
                     return $this->redirectToRoute('jd_reservation_startBillets',
                         [
                             'resacode'    => $resa->getResaCode(),
@@ -119,6 +126,7 @@ class ReservationController extends  Controller
 
     public function panierAction(Request $request, $id, Session $session)
     {
+        $resa = $session->get('resa');
         $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
         $repository =  $this->getDoctrine()->getRepository('JDLouvreBundle:Reservation');
         $resa = $repository->find($id);
@@ -129,6 +137,7 @@ class ReservationController extends  Controller
             ->getRepository(Billets::class)
             ->findByReservation($resa);
         $outilsReservation->prixTotal($totalBilletPrix, $resa);
+        dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Panier:panier.html.twig',
             [
                 'resa'              => $resa,
@@ -251,7 +260,7 @@ class ReservationController extends  Controller
     {
         $resa =  $session->get('resa');
         $sommeHt = $reservation->getPrixTotal();
-        $sommeTtc = (((19.6 * $sommeHt) /100) + $sommeHt);
+        $sommeTtc = (((20 * $sommeHt) /100) + $sommeHt);
         dump($sommeHt);
         dump($sommeTtc);
         \Stripe\Stripe::setApiKey("sk_test_CGUR0LzqpU5EUhIPfAdqatvm");
