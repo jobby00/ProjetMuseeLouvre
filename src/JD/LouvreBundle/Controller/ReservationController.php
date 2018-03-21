@@ -5,6 +5,7 @@ use JD\LouvreBundle\Entity\Billets;
 use JD\LouvreBundle\Entity\Reservation;
 use JD\LouvreBundle\Form\BilletsType;
 use JD\LouvreBundle\Form\ReservationType;
+use JD\LouvreBundle\JDLouvreBundle;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -79,7 +80,8 @@ class ReservationController extends  Controller
                 {
                     $totalBillet ++;
                 }
-                if ($resa->getNbBillets() != $totalBillet) {
+                if ($resa->getNbBillets() != $totalBillet)
+                {
                     //après validation, transfert vers l'étape suivante avec les paramètres de la résa
                     return $this->redirectToRoute('jd_reservation_startBillets',
                         [
@@ -251,7 +253,7 @@ class ReservationController extends  Controller
     {
         $resa =  $session->get('resa');
         $sommeHt = $reservation->getPrixTotal();
-        $sommeTtc = (((19.6 * $sommeHt) /100) + $sommeHt);
+        $sommeTtc = (((20.0 * $sommeHt) / 100) + $sommeHt);
         dump($sommeHt);
         dump($sommeTtc);
         \Stripe\Stripe::setApiKey("sk_test_CGUR0LzqpU5EUhIPfAdqatvm");
@@ -263,10 +265,39 @@ class ReservationController extends  Controller
             "description" => "Paiement Test",
         ));
         dump($resa);
-        return $this->redirectToRoute('jd_reservation_panier',
+        return $this->redirectToRoute('jd_reservation_success',
             [
                 'resacode'    => $resa->getResaCode(),
                 'id'    => $resa->getId()
+            ]
+        );
+    }
+
+    public function successAction(Request $request, Session $session)
+    {
+        $resa = $session->get('resa');
+        $billetResa = $resa;
+        $prixtotal = $resa->getPrixTotal();
+        $message = (new \Swift_Message('Musée du Louvre'))
+                    ->setContentType('text/html')->setSubject('Confirmation de votre commende')
+                    ->setFrom('jobby00@gmail.com')->setTo($resa->getEmail())
+                    ->setBody($this->renderView('JDLouvreBundle:LouvreReservation/Success/Mailer:theMailer.html.twig',
+                        [
+                            'resa'              => $resa,
+                            'billetResa'        => [$billetResa],
+                            'billets'           => $resa,
+                        ],
+                    'text/html'
+                    ));
+       $mailer = $this->get('mailer')->send($message);
+        dump($mailer);
+        dump($resa);
+        return $this->render('JDLouvreBundle:LouvreReservation/Success:recapSuccess.html.twig',
+            [
+                'resa'              => $resa,
+                'billetResa'        => [$billetResa],
+                'billets'           => $resa,
+                'prixtotal'         => $prixtotal
             ]
         );
     }

@@ -37,3 +37,8 @@ jd_reservation_stripe:
     path: /stripe/{id}
     defaults:
         _controller: JDLouvreBundle:Reservation:stripe
+
+jd_reservation_success:
+    path: /success/{id}/{resacode}
+    defaults:
+        _controller: JDLouvreBundle:Reservation:success
