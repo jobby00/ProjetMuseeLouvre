@@ -4,10 +4,10 @@ namespace JD\LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JD\LouvreBundle\Contraintes\Nom as NomAssert;
 
 /**
  * Billets
- *
  * @ORM\Table(name="billets")
  * @ORM\Entity(repositoryClass="JD\LouvreBundle\Repository\BilletsRepository")
  */
@@ -24,7 +24,6 @@ class Billets
 
     /**
      * @var string
-     *
      * @ORM\Column(name="nom", type="string", length=255)
      * @Assert\Length(
      *      min = 2,
@@ -32,12 +31,12 @@ class Billets
      *      minMessage = "Votre nom ne peut faire moins de {{ limit }} caractères.",
      *      maxMessage = "Votre nom ne peut faire plus de {{ limit }} caractères."
      * )
+     * @NomAssert\NomContrainte
      */
     private $nom = '';
 
     /**
      * @var string
-     *
      * @ORM\Column(name="prenom", type="string", length=255)
      * @Assert\Length(
      *      min = 2,

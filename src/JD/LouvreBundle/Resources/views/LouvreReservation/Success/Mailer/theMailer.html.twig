@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="FR">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Muséé Du Louvre{% endblock title %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    {% block stylesheets %}
+        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/united/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css">
+        <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
+    {% endblock %}
+</head>
+<body>
+<!---END NAVE-->
+<div class="container" style="margin-top: 60px">
+    <!--================================================== -->
+    <!-- Containers
+    ================================================== -->
+    <div class="bs-docs-section">
+        <div class="row">
+            <div class="col-lg-12">
+                    <div class="col-lg-12">
+                        <div class="page-header">
+                            <h4 id="containers">Accueil</h4>
+                        </div>
+                        <div class="bs-component">
+                            {% for billetResa in billetResa %}
+                                {% for billet in billetResa.billets %}
+                                    <div class="jumbotron">
+                                        <h4>{{ billet.nom|upper }} {{ billet.prenom|capitalize }}</h4>
+                                        <p>{{ billet.dateNaissance | date('d/m/Y') }}   {{ billet.pays }}     {{ billet.pays }}{{ billetResa.resacode }} </p>
+                                        <p>{{ billet.dateresa | date('d/m/Y') }}   {{ (((20.0 * billet.prix)/100) + billet.prix)|number_format(2, ',',',') }} €</p>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+    </footer>
+    {% block javascripts %}
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    {% endblock %}
+</div>
+</body>
+</html>

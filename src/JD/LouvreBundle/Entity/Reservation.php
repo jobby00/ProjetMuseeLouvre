@@ -4,6 +4,8 @@ namespace JD\LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JD\LouvreBundle\Contraintes\Email as EmailAssert;
+//use JD\LouvreBundle\Contraintes\NBillets as NBilletsAssert;
 use DateTime;
 
 /**
@@ -36,7 +38,7 @@ class Reservation
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
-     * @Assert\Email()
+     * @EmailAssert\EmailContraint
      */
     private $email;
 
@@ -44,6 +46,7 @@ class Reservation
      * @var int
      *
      * @ORM\Column(name="nbBillets", type="integer")
+     * NBilletsAssert\NBilletsContraint
      * @ASSERT\Range(
      *     min = 1,
      *     max = 20

@@ -280,7 +280,7 @@ class ReservationController extends  Controller
         $prixtotal = $resa->getPrixTotal();
         $message = (new \Swift_Message('Musée du Louvre'))
                     ->setContentType('text/html')->setSubject('Confirmation de votre commende')
-                    ->setFrom('jobby00@gmail.com')->setTo($resa->getEmail())
+                    ->setFrom('duverne.job@jobby00.com')->setTo($resa->getEmail())
                     ->setBody($this->renderView('JDLouvreBundle:LouvreReservation/Success/Mailer:theMailer.html.twig',
                         [
                             'resa'              => $resa,
@@ -289,7 +289,7 @@ class ReservationController extends  Controller
                         ],
                     'text/html'
                     ));
-       $mailer = $this->get('mailer')->send($message);
+        $mailer = $this->get('mailer')->send($message);
         dump($mailer);
         dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Success:recapSuccess.html.twig',
