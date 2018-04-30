@@ -9,10 +9,11 @@ class EmailContraintValidator extends ConstraintValidator
 {
     public function Validate($value, Constraint $constraint)
     {
-        if(!preg_match('/^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/', $value, $matches))
+        if(!filter_var($value, FILTER_VALIDATE_EMAIL))
         {
-            $this->context->buildViolation($constraint->messageCesi)
-                ->setParameter('{{string}}', $value)->addViolation();
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ string }}', $value)
+                ->addViolation();
         }
     }
 }

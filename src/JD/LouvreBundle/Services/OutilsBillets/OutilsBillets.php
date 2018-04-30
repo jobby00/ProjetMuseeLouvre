@@ -13,20 +13,22 @@ class OutilsBillets
 {
     private $ageMaxGratuit  = 4;
     private $ageMaxEnfant   = 12;
+    private $ageMinNormale  = 13;
     private $ageMinSenior   = 60;
     private $tarifEnfant    = 8;
     private $tarifSenior    = 12;
     private $tarifNormal    = 16;
-    private  $heureLimiteDemiJournee = 14;
-    private  $nbBilletsMaxParJour = 1000;
+    private $tarifReduit    = 10;
+
+
     private $em;
     private $session;
 
-    public  function __construct(EntityManager $em)
+    public  function __construct(EntityManager $em = null)
     {
         $this->em = $em;
     }
-
+   /**
     public function verifDate(Billets $billets)
     {
         $dateResa = $billets->getDateresa();
@@ -55,10 +57,22 @@ class OutilsBillets
         }
     }
 
+/**
+    public function verifNbPlaces($date, $nbBillets = 1)
+    {
+        $nbBilleReserves = $this->em->getRepository('JDLouvreBundle:Billets')
+            ->countByDateResa($date);
+
+        if ($nbBilleReserves + $nbBillets <= $this->nbBilletsMaxParJour){
+            return true;
+        }else{
+            $this->session->getFlashBag()->add('erreurInterne', "Nous sommes désolé, il reste seulement X billet(s) disponibles à la date demandée!");
+            return false;
+        }
+    }
+
     public function verifNbPlaces(Billets $billets, Reservation $resa)
     {
-        $billetDispo =  true;
-
         $nbBilleReserves = $this->em
             ->getRepository('JDLouvreBundle:Billets')
             ->findByDateResa($billets->getDateResa());
@@ -71,18 +85,16 @@ class OutilsBillets
         $nbilletDisponible = $this->nbBilletsMaxParJour - $sombillets;
         if($nbilletDisponible < 1)
         {
-            dump('test4');
             $this->session->getFlashBag()->add('erreurInterne', "Nous sommes désolé, il n'y a plus de billet disponible à la date demandée!");
             $billetDispo = false;
         }elseif ($nbilletDisponible < $resa->getNbBillets())
         {
-            dump('test5');
             $this->session->getFlashBag()->add('erreurInterne', "Nous sommes désolé, il reste seulement ".$nbilletDisponible." billet(s) disponibles à la date demandée!");
             $billetDispo = false;
         }
         return $billetDispo;
     }
-
+     */
     /**
      * @param Billets $billets
      * @param $resa
@@ -91,12 +103,6 @@ class OutilsBillets
     public  function validerBillet($billets, $resa)
     {
         $em = $this->em;
-        $validerBillet = true;
-        if(!$this->verifDate($billets) || !$this->verifNbPlaces($billets, $resa))
-        {
-            $validerBillet = false;
-            return $validerBillet;
-        }
         try
         {
             $resa->addBillet($billets);
@@ -113,52 +119,33 @@ class OutilsBillets
     }
 
     /**
-     * retourne l'age en fonction de la date de naissance en datetime
-     *
-     * @param datetime $dateNaissance
-     * @return int $age
+     * @param $dateNaissance
+     * @return int
      */
-    public function calculAge($dateNaissance){
-
-        $age = idate('Y') - $dateNaissance->format('Y');
-
-        return $age;
+    public function calculAge($dateNaissance)
+    {
+        $today = new DateTime('now');
+        $age = $today->diff($dateNaissance);
+        return $age->y;
     }
 
-    /**
-     * retourne le tarif du billet en fonction de la date de naissance
-     *
-     *
-     * @param Billet $billet
-     * @return boolean
-     * @internal param $dateNaissance
-     */
-    public function calculPrix($billets){
-
-        $dateNaissance = $billets->getDateNaissance();
-
-        $age = $this->calculAge($dateNaissance);
-
-        if ( $age <= $this->ageMaxGratuit ){
+    public function calculPrix($age)
+    {
+        if($age <= $this->ageMaxGratuit)
+        {
             $prix = 0;
-        }
-        elseif ( $age <= $this->ageMaxEnfant )
+        }elseif ($age <= $this->ageMaxEnfant)
         {
-            $prix = $this->tarifEnfant = 8;
-        }
-        elseif( $age >= $this->ageMinSenior)
+            $prix = $this->tarifEnfant;
+        }elseif ($age >= $this->ageMinSenior)
         {
-            $prix = $this->tarifSenior = 12;
-        }
-        elseif ( $billets->getTarifReduit() )
+            $prix = $this->tarifSenior;
+        }elseif ($age >= $this->ageMinNormale)
         {
-            $prix = $this->tarifReduit = 10;
+            $prix = $this->tarifNormal;
+        }else{
+            $prix = $this->tarifReduit;
         }
-        else
-        {
-            $prix = $this->tarifNormal = 16;
-        }
-        $billets->setPrix($prix);
-        return $billets;
+        return $prix;
     }
 }

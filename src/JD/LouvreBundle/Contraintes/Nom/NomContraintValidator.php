@@ -5,7 +5,7 @@ namespace JD\LouvreBundle\Contraintes\Nom;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class NomContrainteValidator extends  ConstraintValidator
+class NomContraintValidator extends  ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
@@ -15,5 +15,4 @@ class NomContrainteValidator extends  ConstraintValidator
                 ->setParameter('{{ string }}', $value)->addViolation();
         }
     }
-
 }

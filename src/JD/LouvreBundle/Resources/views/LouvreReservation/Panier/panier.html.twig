@@ -8,6 +8,12 @@
             <div class="page-header">
                 <h4 id="containers">Panier</h4>
             </div>
+
+            {% for error in errors %}
+                <li>
+                    {{ error.message }}
+                </li>
+            {% endfor %}
             <div class="bs-component">
                 <div class="jumbotron">
                     <div class="row">

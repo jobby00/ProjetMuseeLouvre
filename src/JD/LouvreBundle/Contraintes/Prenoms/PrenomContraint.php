@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class  PrenomContrainte extends Constraint
+class PrenomContraint extends Constraint
 {
     public $messagePrenom = 'Vous avez connu une erreur, la première lettre votre Prenom doit etres en majuscule exemple: Dupont Crousse';
 

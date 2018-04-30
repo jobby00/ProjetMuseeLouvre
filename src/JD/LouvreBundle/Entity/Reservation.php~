@@ -4,6 +4,8 @@ namespace JD\LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JD\LouvreBundle\Contraintes\Email as EmailAssert;
+//use JD\LouvreBundle\Contraintes\NBillets as NBilletsAssert;
 use DateTime;
 
 /**
@@ -36,7 +38,7 @@ class Reservation
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
-     * @Assert\Email()
+     * @EmailAssert\EmailContraint
      */
     private $email;
 
@@ -44,12 +46,19 @@ class Reservation
      * @var int
      *
      * @ORM\Column(name="nbBillets", type="integer")
+     * NBilletsAssert\NBilletsContraint
      * @ASSERT\Range(
      *     min = 1,
      *     max = 20
      * )
      */
     private $nbBillets = 1;
+
+    /**
+     * @var \Boolean
+     * @ORM\Column(name="payer", type="boolean")
+     */
+    private $payer  = 0;
 
     /**
      * @var string
@@ -222,5 +231,29 @@ class Reservation
     public function getBillets()
     {
         return $this->billets;
+    }
+
+    /**
+     * Set prixTotal
+     *
+     * @param float $prixTotal
+     *
+     * @return Reservation
+     */
+    public function setPrixTotal($prixTotal)
+    {
+        $this->prixTotal = $prixTotal;
+
+        return $this;
+    }
+
+    /**
+     * Get prixTotal
+     *
+     * @return float
+     */
+    public function getPrixTotal()
+    {
+        return $this->prixTotal;
     }
 }

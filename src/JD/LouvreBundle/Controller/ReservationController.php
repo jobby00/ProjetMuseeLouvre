@@ -5,7 +5,6 @@ use JD\LouvreBundle\Entity\Billets;
 use JD\LouvreBundle\Entity\Reservation;
 use JD\LouvreBundle\Form\BilletsType;
 use JD\LouvreBundle\Form\ReservationType;
-use JD\LouvreBundle\JDLouvreBundle;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +24,7 @@ class ReservationController extends  Controller
      */
     public function startReservationAction(Request $request, $resaCode)
     {
-        $session = new Session();
+       $session = $request->getSession();
         //Initialisation du SERVICE OutilsReservayion
         $outilsReservation = $this->get('service_container')->get('jd_reservation.outilsreservation');
         $resa = $outilsReservation->reservationInitial($resaCode, true);
@@ -35,7 +34,7 @@ class ReservationController extends  Controller
         if($form->isSubmitted() && $form->isValid())
         {
             $resa = $form->getData();
-            $session->set('resa', $resa);
+           $session->set('resa', $resa);
             if($outilsReservation->reservationValider($resa))
             {
                 $request->getSession()->getFlashBag()->add('notice', 'Vous avez bien demarrer votre reservation, vous ètres à l\'Etape 2');
@@ -72,7 +71,9 @@ class ReservationController extends  Controller
         {
             $session->set('resa', $resa);
             $billets->setReservation($resa);
-            $billets = $outilsBillets->calculPrix($billets);
+             $age = $outilsBillets->calculAge($billets->getDateNaissance());
+             $prix = $outilsBillets->calculPrix($age);
+             $billets->setPrix($prix);
             if ($outilsBillets->validerBillet($billets, $resa))
             {
                 $totalBillet = 0;
@@ -107,7 +108,6 @@ class ReservationController extends  Controller
         $outilsReservation->prixTotal($totalBilletPrix, $resa);
         $billetResa = $resa;
         $resa->getBillets();
-        dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Billets:startBillets.html.twig',
             [
                 'resa'          => $resa,
@@ -156,7 +156,11 @@ class ReservationController extends  Controller
         if ($form->isSubmitted() && $form->isValid())
         {
             $session->set('resa', $resa);
-            $billets = $outilsBillets->calculPrix($billets);
+            // $outilsBillets->calculPrix($billets);
+            $age = $outilsBillets->calculAge($billets->getDateNaissance());
+            $prix = $outilsBillets->calculPrix($age);
+            $billets->getTarifReduit();
+            $billets->setPrix($prix);
             $em = $this->getDoctrine()
                 ->getManager();
             $em->flush();
@@ -249,28 +253,54 @@ class ReservationController extends  Controller
                 ]);
         }
     }
+
+    /**
+     * @param Session $session
+     * @param Request $request
+     * @param Reservation $reservation
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function  stripeAction(Session $session, Request $request, Reservation $reservation)
     {
+        $reservation->setPayer(true);
+
         $resa =  $session->get('resa');
         $sommeHt = $reservation->getPrixTotal();
         $sommeTtc = (((20.0 * $sommeHt) / 100) + $sommeHt);
         dump($sommeHt);
         dump($sommeTtc);
         \Stripe\Stripe::setApiKey("sk_test_CGUR0LzqpU5EUhIPfAdqatvm");
+        $validator = $this->get('validator');
+        $errors = $validator->validate($reservation);
 
+        if (count($errors) > 0) {
+            /*
+             * Uses a __toString method on the $errors variable which is a
+             * ConstraintViolationList object. This gives us a nice string
+             * for debugging.
+             */
+            return $this->redirectToRoute('jd_reservation_panier',
+                [
+                    'id' => $resa->getId(),
+                    'resacode' => $resa->getResaCode()
+                ]
+            );
+        }
         \Stripe\Charge::create(array(
             "amount" => $sommeTtc * 100,
             "currency" => "eur",
             "source" => $request->request->get('stripeToken'), // obtained with Stripe.js
             "description" => "Paiement Test",
         ));
-        dump($resa);
+        //return new Response('');
+
         return $this->redirectToRoute('jd_reservation_success',
             [
                 'resacode'    => $resa->getResaCode(),
                 'id'    => $resa->getId()
             ]
         );
+
     }
 
     public function successAction(Request $request, Session $session)
@@ -290,8 +320,6 @@ class ReservationController extends  Controller
                     'text/html'
                     ));
         $mailer = $this->get('mailer')->send($message);
-        dump($mailer);
-        dump($resa);
         return $this->render('JDLouvreBundle:LouvreReservation/Success:recapSuccess.html.twig',
             [
                 'resa'              => $resa,

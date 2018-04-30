@@ -16,11 +16,27 @@ class OutilsBilletsTest extends TestCase
         $this->assertEquals(44, $age);
     }
 
+
     public function testCalculPrix()
     {
         $prixBillets = new OutilsBillets();
-        $age = 41;
-        $prixBillets->calculPrix($age);
-        $this->assertEquals(16, $prixBillets);
+        $age = 2;
+        $prix = $prixBillets->calculPrix($age);
+        $this->assertEquals(0, $prix);
+
+        $prixBillets = new OutilsBillets();
+        $age = 6;
+        $prix = $prixBillets->calculPrix($age);
+        $this->assertEquals(8, $prix);
+
+        $prixBillets = new OutilsBillets();
+        $age = 14;
+        $prix = $prixBillets->calculPrix($age);
+        $this->assertEquals(16, $prix);
+
+        $prixBillets = new OutilsBillets();
+        $age = 60;
+        $prix = $prixBillets->calculPrix($age);
+        $this->assertEquals(12, $prix);
     }
 }

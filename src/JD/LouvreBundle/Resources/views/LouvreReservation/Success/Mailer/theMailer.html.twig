@@ -24,10 +24,10 @@
                         <div class="page-header">
                             <h4 id="containers">Accueil</h4>
                         </div>
-                        <div class="bs-component">
+                        <div class="bs-component" style="background-color: #8959A8">
                             {% for billetResa in billetResa %}
                                 {% for billet in billetResa.billets %}
-                                    <div class="jumbotron">
+                                    <div class="jumbotron" style="background: #5d5857">
                                         <h4>{{ billet.nom|upper }} {{ billet.prenom|capitalize }}</h4>
                                         <p>{{ billet.dateNaissance | date('d/m/Y') }}   {{ billet.pays }}     {{ billet.pays }}{{ billetResa.resacode }} </p>
                                         <p>{{ billet.dateresa | date('d/m/Y') }}   {{ (((20.0 * billet.prix)/100) + billet.prix)|number_format(2, ',',',') }} €</p>

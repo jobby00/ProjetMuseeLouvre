@@ -5,11 +5,16 @@ namespace JD\LouvreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use JD\LouvreBundle\Contraintes\Nom as NomAssert;
+use JD\LouvreBundle\Contraintes\Prenoms as PrenomAssert;
+use JD\LouvreBundle\Contraintes\Date as DateAssert;
+use JD\LouvreBundle\Contraintes\NbBillets as NbBilletsAssert;
 
 /**
  * Billets
  * @ORM\Table(name="billets")
  * @ORM\Entity(repositoryClass="JD\LouvreBundle\Repository\BilletsRepository")
+ * @DateAssert\DateContraint()
+ *
  */
 class Billets
 {
@@ -31,7 +36,7 @@ class Billets
      *      minMessage = "Votre nom ne peut faire moins de {{ limit }} caractères.",
      *      maxMessage = "Votre nom ne peut faire plus de {{ limit }} caractères."
      * )
-     * @NomAssert\NomContrainte
+     * @NomAssert\NomContraint()
      */
     private $nom = '';
 
@@ -44,6 +49,7 @@ class Billets
      *      minMessage = "Votre prénom ne peut faire moins de {{ limit }} caractères.",
      *      maxMessage = "Votre prénom ne peut faire plus de {{ limit }} caractères."
      * )
+     * @PrenomAssert\PrenomContraint()
      */
     private $prenom = '';
 
@@ -77,6 +83,7 @@ class Billets
      *      "today",
      *      message = "merci ne pas choisir une date antérieure à celle du jour.."
      * )
+     *
      */
     private $dateResa;
 
@@ -92,6 +99,7 @@ class Billets
      *
      * @ORM\Column(name="demiJournee", type="boolean")
      * @Assert\Type(type="boolean")
+     *
      */
     private $demiJournee;
 
@@ -129,7 +137,6 @@ class Billets
     public function setNom($nom)
     {
         $this->nom = $nom;
-
         return $this;
     }
 

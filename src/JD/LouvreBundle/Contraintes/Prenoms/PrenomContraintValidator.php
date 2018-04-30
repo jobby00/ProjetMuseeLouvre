@@ -4,7 +4,7 @@ namespace JD\LouvreBundle\Contraintes\Prenoms;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class PrenomContraintreValidator extends ConstraintValidator
+class PrenomContraintValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
